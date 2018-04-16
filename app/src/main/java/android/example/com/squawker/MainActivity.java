@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements
     static final int COL_NUM_DATE = 2;
     static final int COL_NUM_AUTHOR_KEY = 3;
 
+    private final static String FCM_EXTRA_KEY = "isfcm";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,9 +87,14 @@ public class MainActivity extends AppCompatActivity implements
         // Start the loader
         getSupportLoaderManager().initLoader(LOADER_ID_MESSAGES, null, this);
 
-        // TODO (1) Get the test data here from the extras bundle that came with this intent.
+        // DONE (1) Get the test data here from the extras bundle that came with this intent.
         // To confirm that the data was passed in, make sure to show the data in a log statement.
+        if (getIntent().getExtras() != null
+                && getIntent().getExtras().containsKey(FCM_EXTRA_KEY)) {
 
+            String fcmString = getIntent().getStringExtra(FCM_EXTRA_KEY);
+            Log.d(LOG_TAG, "FCM: " + fcmString);
+        }
     }
 
     @Override
