@@ -15,18 +15,37 @@
 */
 package android.example.com.squawker.following;
 
+import android.content.SharedPreferences;
 import android.example.com.squawker.R;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceFragmentCompat;
+
+import com.google.firebase.messaging.FirebaseMessaging;
 
 
 /**
  * Shows the list of instructors you can follow
  */
 // TODO (1) Implement onSharedPreferenceChangeListener
-public class FollowingPreferenceFragment extends PreferenceFragmentCompat {
+public class FollowingPreferenceFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private final static String LOG_TAG = FollowingPreferenceFragment.class.getSimpleName();
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        getPreferenceManager().getSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        getPreferenceManager().getSharedPreferences()
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -44,5 +63,18 @@ public class FollowingPreferenceFragment extends PreferenceFragmentCompat {
 
     // TODO (3) Make sure to register and unregister this as a Shared Preference Change listener, in
     // onCreate and onDestroy.
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+        boolean selected = sharedPreferences.getBoolean(key, false);
+
+        if (selected) {
+            FirebaseMessaging.getInstance().subscribeToTopic(key);
+        } else {
+            FirebaseMessaging.getInstance().unsubscribeFromTopic(key);
+        }
+
+    }
 
 }
